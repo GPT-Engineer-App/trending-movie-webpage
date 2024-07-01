@@ -239,15 +239,17 @@ const Index = () => {
                   ) : (
                     movieDetails && (
                       <div>
+                        <h3 className="text-xl font-semibold mt-4">Overview</h3>
                         <p>{movieDetails.overview}</p>
-                        <p>Director: {movieDetails.director}</p>
-                        <h3>Full Cast:</h3>
+                        <h3 className="text-xl font-semibold mt-4">Director</h3>
+                        <p>{movieDetails.director}</p>
+                        <h3 className="text-xl font-semibold mt-4">Full Cast</h3>
                         <ul>
                           {movieDetails.cast.map((actor) => (
                             <li key={actor.id}>{actor.name}</li>
                           ))}
                         </ul>
-                        <h3>Reviews:</h3>
+                        <h3 className="text-xl font-semibold mt-4">Reviews</h3>
                         <ul>
                           {movieDetails.reviews.map((review) => (
                             <li key={review.id}>{review.content}</li>
