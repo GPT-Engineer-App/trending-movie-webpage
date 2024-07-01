@@ -21,6 +21,7 @@ const Index = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [movieDetails, setMovieDetails] = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const [selectedGenre, setSelectedGenre] = useState(null); // New state for selected genre
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -41,7 +42,7 @@ const Index = () => {
       }
     };
 
-    const fetchTrendingMovies = async (page) => {
+    const fetchMovies = async (page, genre) => {
       const options = {
         method: 'GET',
         headers: {
@@ -51,7 +52,10 @@ const Index = () => {
       };
 
       try {
-        const response = await fetch(`https://api.themoviedb.org/3/trending/movie/week?page=${page}`, options);
+        const url = genre 
+          ? `https://api.themoviedb.org/3/discover/movie?with_genres=${genre}&page=${page}`
+          : `https://api.themoviedb.org/3/trending/movie/week?page=${page}`;
+        const response = await fetch(url, options);
         const data = await response.json();
         const moviesWithActors = await Promise.all(data.results.map(async (movie) => {
           const actorsResponse = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/credits`, options);
@@ -86,9 +90,9 @@ const Index = () => {
     };
 
     fetchConfig();
-    fetchTrendingMovies(page);
+    fetchMovies(page, selectedGenre); // Fetch movies based on selected genre
     fetchGenres();
-  }, [page]);
+  }, [page, selectedGenre]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -104,6 +108,9 @@ const Index = () => {
         ? prevSelectedGenres.filter((id) => id !== genreId)
         : [...prevSelectedGenres, genreId]
     );
+    setSelectedGenre(genreId); // Set the selected genre
+    setMovies([]); // Clear the current movies
+    setPage(1); // Reset the page number
   };
 
   const loadMoreMovies = () => {
