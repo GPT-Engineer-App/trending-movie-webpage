@@ -230,31 +230,39 @@ const Index = () => {
                 <DialogTrigger asChild>
                   <Button onClick={() => { setSelectedMovie(movie); fetchMovieDetails(movie.id); }}>View More</Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
                   <DialogHeader>
-                    <DialogTitle>{selectedMovie?.title}</DialogTitle>
+                    <DialogTitle className="text-2xl font-bold">{selectedMovie?.title}</DialogTitle>
                   </DialogHeader>
                   {loadingDetails ? (
                     <p>Loading...</p>
                   ) : (
                     movieDetails && (
-                      <div>
-                        <h3 className="text-xl font-semibold mt-4">Overview</h3>
-                        <p>{movieDetails.overview}</p>
-                        <h3 className="text-xl font-semibold mt-4">Director</h3>
-                        <p>{movieDetails.director}</p>
-                        <h3 className="text-xl font-semibold mt-4">Full Cast</h3>
-                        <ul>
-                          {movieDetails.cast.map((actor) => (
-                            <li key={actor.id}>{actor.name}</li>
-                          ))}
-                        </ul>
-                        <h3 className="text-xl font-semibold mt-4">Reviews</h3>
-                        <ul>
-                          {movieDetails.reviews.map((review) => (
-                            <li key={review.id}>{review.content}</li>
-                          ))}
-                        </ul>
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="text-xl font-semibold">Overview</h3>
+                          <p>{movieDetails.overview}</p>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-semibold">Director</h3>
+                          <p>{movieDetails.director}</p>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-semibold">Full Cast</h3>
+                          <ul className="list-disc list-inside">
+                            {movieDetails.cast.map((actor) => (
+                              <li key={actor.id}>{actor.name}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-semibold">Reviews</h3>
+                          <ul className="list-disc list-inside">
+                            {movieDetails.reviews.map((review) => (
+                              <li key={review.id}>{review.content}</li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
                     )
                   )}
