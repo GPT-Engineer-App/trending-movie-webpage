@@ -1,19 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Index = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [config, setConfig] = useState(null);
 
   useEffect(() => {
-    const fetchTrendingMovies = async () => {
+    const fetchConfig = async () => {
+      const options = {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzlmNzBiYzE3NWUwMzViYmNkMDVmYmI1MzI4OGE0NyIsIm5iZiI6MTcxOTgyNzUwMS40MTQ0NjQsInN1YiI6IjY2ODI3YWRiNzVlOWZhMmNmMzkyODAzNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.AoqxCfHRacX-JCzlco4jxf35-p5H1QysNjFGzcMi3w4'
+        }
+      };
+
       try {
-        const response = await axios.get(
-          `https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.REACT_APP_TMDB_API_KEY}`
-        );
-        setMovies(response.data.results);
+        const response = await fetch('https://api.themoviedb.org/3/configuration', options);
+        const data = await response.json();
+        setConfig(data);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    const fetchTrendingMovies = async () => {
+      const options = {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzlmNzBiYzE3NWUwMzViYmNkMDVmYmI1MzI4OGE0NyIsIm5iZiI6MTcxOTgyNzUwMS40MTQ0NjQsInN1YiI6IjY2ODI3YWRiNzVlOWZhMmNmMzkyODAzNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.AoqxCfHRacX-JCzlco4jxf35-p5H1QysNjFGzcMi3w4'
+        }
+      };
+
+      try {
+        const response = await fetch('https://api.themoviedb.org/3/trending/movie/week', options);
+        const data = await response.json();
+        setMovies(data.results);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -21,6 +46,7 @@ const Index = () => {
       }
     };
 
+    fetchConfig();
     fetchTrendingMovies();
   }, []);
 
@@ -44,6 +70,12 @@ const Index = () => {
             <CardContent>
               <p>Release Date: {movie.release_date}</p>
               <p>Rating: {movie.vote_average}</p>
+              {config && (
+                <img
+                  src={`${config.images.secure_base_url}${config.images.poster_sizes[2]}${movie.poster_path}`}
+                  alt={movie.title}
+                />
+              )}
             </CardContent>
           </Card>
         ))}
