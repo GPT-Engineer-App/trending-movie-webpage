@@ -226,6 +226,7 @@ const Index = () => {
                   ))}
                 </ul>
               </div>
+              <h3 className="mt-4 font-semibold">More Details:</h3>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button onClick={() => { setSelectedMovie(movie); fetchMovieDetails(movie.id); }}>View More</Button>
@@ -238,21 +239,31 @@ const Index = () => {
                     <p>Loading...</p>
                   ) : (
                     movieDetails && (
-                      <div>
-                        <p>{movieDetails.overview}</p>
-                        <p>Director: {movieDetails.director}</p>
-                        <h3>Full Cast:</h3>
-                        <ul>
-                          {movieDetails.cast.map((actor) => (
-                            <li key={actor.id}>{actor.name}</li>
-                          ))}
-                        </ul>
-                        <h3>Reviews:</h3>
-                        <ul>
-                          {movieDetails.reviews.map((review) => (
-                            <li key={review.id}>{review.content}</li>
-                          ))}
-                        </ul>
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="font-semibold">Overview</h3>
+                          <p>{movieDetails.overview}</p>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">Director</h3>
+                          <p>{movieDetails.director}</p>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">Full Cast</h3>
+                          <ul>
+                            {movieDetails.cast.map((actor) => (
+                              <li key={actor.id}>{actor.name}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">Reviews</h3>
+                          <ul>
+                            {movieDetails.reviews.map((review) => (
+                              <li key={review.id}>{review.content}</li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
                     )
                   )}
