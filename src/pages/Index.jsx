@@ -80,8 +80,8 @@ const Index = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSort = (event) => {
-    setSortOption(event.target.value);
+  const handleSort = (value) => {
+    setSortOption(value);
   };
 
   const handleGenreChange = (genreId) => {
@@ -105,6 +105,8 @@ const Index = () => {
         return new Date(b.release_date) - new Date(a.release_date);
       } else if (sortOption === 'rating') {
         return b.vote_average - a.vote_average;
+      } else if (sortOption === 'popularity') {
+        return b.popularity - a.popularity;
       } else {
         return 0;
       }
@@ -136,6 +138,7 @@ const Index = () => {
           <SelectContent>
             <SelectItem value="release_date">Release Date</SelectItem>
             <SelectItem value="rating">Rating</SelectItem>
+            <SelectItem value="popularity">Popularity</SelectItem>
           </SelectContent>
         </Select>
         <div className="flex flex-wrap space-x-2">
