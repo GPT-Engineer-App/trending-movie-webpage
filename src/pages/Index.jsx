@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const [movies, setMovies] = useState([]);
@@ -13,6 +14,8 @@ const Index = () => {
   const [sortOption, setSortOption] = useState('');
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [genres, setGenres] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -33,7 +36,7 @@ const Index = () => {
       }
     };
 
-    const fetchTrendingMovies = async () => {
+    const fetchTrendingMovies = async (page) => {
       const options = {
         method: 'GET',
         headers: {
@@ -43,14 +46,15 @@ const Index = () => {
       };
 
       try {
-        const response = await fetch('https://api.themoviedb.org/3/trending/movie/week', options);
+        const response = await fetch(`https://api.themoviedb.org/3/trending/movie/week?page=${page}`, options);
         const data = await response.json();
         const moviesWithActors = await Promise.all(data.results.map(async (movie) => {
           const actorsResponse = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/credits`, options);
           const actorsData = await actorsResponse.json();
           return { ...movie, actors: actorsData.cast.slice(0, 3) }; // Get top 3 actors
         }));
-        setMovies(moviesWithActors);
+        setMovies((prevMovies) => [...prevMovies, ...moviesWithActors]);
+        setHasMore(data.page < data.total_pages);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -77,9 +81,9 @@ const Index = () => {
     };
 
     fetchConfig();
-    fetchTrendingMovies();
+    fetchTrendingMovies(page);
     fetchGenres();
-  }, []);
+  }, [page]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -95,6 +99,10 @@ const Index = () => {
         ? prevSelectedGenres.filter((id) => id !== genreId)
         : [...prevSelectedGenres, genreId]
     );
+  };
+
+  const loadMoreMovies = () => {
+    setPage((prevPage) => prevPage + 1);
   };
 
   const filteredMovies = movies
@@ -186,6 +194,11 @@ const Index = () => {
           </Card>
         ))}
       </div>
+      {hasMore && (
+        <div className="flex justify-center mt-4">
+          <Button onClick={loadMoreMovies}>Load More</Button>
+        </div>
+      )}
     </div>
   );
 };
