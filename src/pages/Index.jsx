@@ -45,7 +45,12 @@ const Index = () => {
       try {
         const response = await fetch('https://api.themoviedb.org/3/trending/movie/week', options);
         const data = await response.json();
-        setMovies(data.results);
+        const moviesWithActors = await Promise.all(data.results.map(async (movie) => {
+          const actorsResponse = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/credits`, options);
+          const actorsData = await actorsResponse.json();
+          return { ...movie, actors: actorsData.cast.slice(0, 3) }; // Get top 3 actors
+        }));
+        setMovies(moviesWithActors);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -169,6 +174,14 @@ const Index = () => {
                   alt={movie.title}
                 />
               )}
+              <div>
+                <h3 className="mt-2 font-semibold">Main Actors:</h3>
+                <ul>
+                  {movie.actors.map((actor) => (
+                    <li key={actor.id}>{actor.name}</li>
+                  ))}
+                </ul>
+              </div>
             </CardContent>
           </Card>
         ))}
