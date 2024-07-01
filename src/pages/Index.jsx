@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 
 const Index = () => {
   const [movies, setMovies] = useState([]);
@@ -16,6 +18,9 @@ const Index = () => {
   const [genres, setGenres] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [movieDetails, setMovieDetails] = useState(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -105,6 +110,27 @@ const Index = () => {
     setPage((prevPage) => prevPage + 1);
   };
 
+  const fetchMovieDetails = async (movieId) => {
+    setLoadingDetails(true);
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzlmNzBiYzE3NWUwMzViYmNkMDVmYmI1MzI4OGE0NyIsIm5iZiI6MTcxOTgyNzUwMS40MTQ0NjQsInN1YiI6IjY2ODI3YWRiNzVlOWZhMmNmMzkyODAzNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.AoqxCfHRacX-JCzlco4jxf35-p5H1QysNjFGzcMi3w4'
+      }
+    };
+
+    try {
+      const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}`, options);
+      const data = await response.json();
+      setMovieDetails(data);
+    } catch (err) {
+      toast.error('Failed to fetch movie details');
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
   const filteredMovies = movies
     .filter((movie) =>
       movie.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -190,6 +216,38 @@ const Index = () => {
                   ))}
                 </ul>
               </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button onClick={() => { setSelectedMovie(movie); fetchMovieDetails(movie.id); }}>View More</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{selectedMovie?.title}</DialogTitle>
+                  </DialogHeader>
+                  {loadingDetails ? (
+                    <p>Loading...</p>
+                  ) : (
+                    movieDetails && (
+                      <div>
+                        <p>{movieDetails.overview}</p>
+                        <p>Director: {movieDetails.director}</p>
+                        <h3>Full Cast:</h3>
+                        <ul>
+                          {movieDetails.cast.map((actor) => (
+                            <li key={actor.id}>{actor.name}</li>
+                          ))}
+                        </ul>
+                        <h3>Reviews:</h3>
+                        <ul>
+                          {movieDetails.reviews.map((review) => (
+                            <li key={review.id}>{review.content}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )
+                  )}
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
         ))}
