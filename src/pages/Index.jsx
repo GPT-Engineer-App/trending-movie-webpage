@@ -37,8 +37,6 @@ const Index = () => {
         const data = await response.json();
         setConfig(data);
       } catch (err) {
-        console.error("Error in fetchConfig at line 18:", err.message);
-        console.error("For the full message or use the non-minified dev environment for full errors and additional helpful warnings.");
         setError(err.message);
       }
     };
@@ -63,8 +61,6 @@ const Index = () => {
         setMovies((prevMovies) => [...prevMovies, ...moviesWithActors]);
         setHasMore(data.page < data.total_pages);
       } catch (err) {
-        console.error("Error in fetchTrendingMovies at line 29:", err.message);
-        console.error("For the full message or use the non-minified dev environment for full errors and additional helpful warnings.");
         setError(err.message);
       } finally {
         setLoading(false);
@@ -85,8 +81,6 @@ const Index = () => {
         const data = await response.json();
         setGenres(data.genres);
       } catch (err) {
-        console.error("Error in fetchGenres at line 52:", err.message);
-        console.error("For the full message or use the non-minified dev environment for full errors and additional helpful warnings.");
         setError(err.message);
       }
     };
@@ -141,8 +135,6 @@ const Index = () => {
         reviews: reviewsData.results,
       });
     } catch (err) {
-      console.error("Error in fetchMovieDetails at line 105:", err.message);
-      console.error("For the full message or use the non-minified dev environment for full errors and additional helpful warnings.");
       toast.error('Failed to fetch movie details');
     } finally {
       setLoadingDetails(false);
