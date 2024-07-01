@@ -123,17 +123,7 @@ const Index = () => {
     try {
       const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}`, options);
       const data = await response.json();
-      const creditsResponse = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits`, options);
-      const creditsData = await creditsResponse.json();
-      const reviewsResponse = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/reviews`, options);
-      const reviewsData = await reviewsResponse.json();
-      const director = creditsData.crew.find((member) => member.job === 'Director');
-      setMovieDetails({
-        ...data,
-        director: director ? director.name : 'N/A',
-        cast: creditsData.cast,
-        reviews: reviewsData.results,
-      });
+      setMovieDetails(data);
     } catch (err) {
       toast.error('Failed to fetch movie details');
     } finally {
